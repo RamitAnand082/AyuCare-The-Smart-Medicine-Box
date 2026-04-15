@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Ayucare{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,500&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
+  </head>
+  <body class="{% block body_class %}{% endblock %}">
+    <header class="app-header">
+      <div class="container header-inner">
+        <div class="brand">
+          {% if session.get("doctor_id") %}
+          <a href="{{ url_for('dashboard.dashboard') }}" class="brand-logo brand-logo--link">AyuCare</a>
+          {% else %}
+          <span class="brand-logo">AyuCare</span>
+          {% endif %}
+        </div>
+        {% block header_actions %}{% endblock %}
+      </div>
+    </header>
+
+    <main class="app-main">
+      <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <div class="flash-container">
+              {% for category, message in messages %}
+                <div class="flash flash-{{ category }}">{{ message }}</div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+      </div>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+    {% block extra_js %}{% endblock %}
+  </body>
+</html>
+

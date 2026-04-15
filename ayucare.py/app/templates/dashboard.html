@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard | Ayucare{% endblock %}
+{% block body_class %}page-app{% endblock %}
+
+{% block header_actions %}
+  <div class="header-actions">
+    <span class="welcome-text">Welcome, {{ doctor_name }}</span>
+    <a href="{{ url_for('dashboard.adherence_view') }}" class="btn secondary-btn">Adherence Score</a>
+    <div class="notification-bell" id="notification-bell">
+      <button type="button" class="bell-button" id="notification-toggle" aria-label="Notifications">
+        🔔
+        <span class="badge-count" id="notification-count" hidden>0</span>
+      </button>
+      <div class="notification-dropdown" id="notification-dropdown" hidden>
+        <div class="notification-header">
+          <span>Notifications</span>
+          <button type="button" class="link-button" id="mark-all-read">Mark all read</button>
+        </div>
+        <div class="notification-list" id="notification-list">
+          <p class="notification-empty">No notifications.</p>
+        </div>
+      </div>
+    </div>
+    <a href="{{ url_for('auth.logout') }}" class="btn secondary-btn">Logout</a>
+  </div>
+{% endblock %}
+
+{% block content %}
+  <script>
+    window.AYUCARE_DOCTOR_ID = {{ doctor_id|default('null') }};
+  </script>
+  <section class="welcome-banner" aria-label="Welcome">
+    <div class="welcome-banner-text">
+      <h2 class="welcome-banner-title">Hello, {{ doctor_name }}</h2>
+      <p class="welcome-banner-sub">
+        Your dashboard is ready — add patients, tune medicine times, and keep boxes in sync.
+      </p>
+    </div>
+    <div class="welcome-banner-accent" aria-hidden="true"></div>
+  </section>
+  <section class="dashboard-grid">
+    <div class="card">
+      <p class="card-eyebrow">Patients</p>
+      <h2>Add Patient</h2>
+      <form id="add-patient-form" class="dashboard-form" novalidate>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="patient-name">Name</label>
+            <input
+              type="text"
+              id="patient-name"
+              name="name"
+              placeholder="Patient name"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="patient-age">Age</label>
+            <input
+              type="number"
+              id="patient-age"
+              name="age"
+              placeholder="Age"
+              min="0"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="patient-box-id">Box ID</label>
+          <input
+            type="text"
+            id="patient-box-id"
+            name="box_id"
+            placeholder="Unique box identifier"
+            required
+          />
+        </div>
+
+        <button type="submit" class="btn primary-btn">Add Patient</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <p class="device-sync-tip">
+        <strong>Hardware link:</strong> Add medicine entries below for each patient. The hardware/PC scheduler will trigger alarms for each entry and record taken/missed notifications.
+      </p>
+      <p class="card-eyebrow">Directory</p>
+      <h2>Patients</h2>
+      <div class="table-wrapper">
+        <table class="data-table" id="patients-table">
+          <thead>
+            <tr>
+              <th>Patient Name</th>
+              <th>Age</th>
+              <th>Box ID</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Filled by dashboard.js -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card full-width">
+      <div class="card-header-row">
+        <div>
+          <p class="card-eyebrow">Scheduling</p>
+          <h2>Medicine entries</h2>
+        </div>
+        <button type="button" class="btn secondary-btn" id="refresh-medicine-entries-btn">
+          Refresh
+        </button>
+      </div>
+      <p class="device-sync-tip">
+        Add unlimited medicines per patient. Choose a slot (Morning/Afternoon/Night/Custom) and set the exact time (HH:MM).
+      </p>
+
+      <form id="add-medicine-entry-form" class="dashboard-form" novalidate>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="med-entry-patient">Patient</label>
+            <select id="med-entry-patient" name="patient_id" required></select>
+          </div>
+          <div class="form-group">
+            <label for="med-entry-name">Medicine name</label>
+            <input type="text" id="med-entry-name" name="medicine_name" placeholder="e.g. Paracetamol 500mg" required />
+          </div>
+          <div class="form-group">
+            <label for="med-entry-slot">Slot</label>
+            <select id="med-entry-slot" name="slot" required>
+              <option value="morning">Morning</option>
+              <option value="afternoon">Afternoon</option>
+              <option value="night">Night</option>
+              <option value="custom" selected>Custom</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="med-entry-time">Dose time (HH:MM)</label>
+            <input type="text" id="med-entry-time" name="dose_time" placeholder="08:30" required />
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="med-entry-note">Note / Instructions (optional)</label>
+          <input type="text" id="med-entry-note" name="note" placeholder="e.g. after food" />
+        </div>
+        <button type="submit" class="btn primary-btn">Add medicine entry</button>
+      </form>
+
+      <div class="table-wrapper" style="margin-top:0.75rem;">
+        <table class="data-table" id="medicine-entries-table">
+          <thead>
+            <tr>
+              <th>Patient</th>
+              <th>Box ID</th>
+              <th>Medicine</th>
+              <th>Slot</th>
+              <th>Time</th>
+              <th>Note</th>
+              <th>Active</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Filled by dashboard.js -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Legacy Live Dose Status (morning/afternoon/night) removed in favor of per-medicine-entry notifications -->
+  </section>
+
+  <div id="alert-container" class="alert-container" aria-live="polite"></div>
+{% endblock %}
+
+{% block extra_js %}
+  <!-- Socket.IO client for real-time notifications (no SRI for local dev) -->
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}
+

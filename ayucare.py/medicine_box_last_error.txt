@@ -1,0 +1,9 @@
+ERROR: Could not open serial port.
+  - Is the COM port already in use? Close the Serial Monitor in VS Code/PlatformIO.
+  - Is the ESP32 plugged in and on the correct port?
+  Details: could not open port 'COM8': PermissionError(13, 'Access is denied.', None, 5)
+
+Available ports on this computer:
+  COM8  —  Silicon Labs CP210x USB to UART Bridge (COM8)
+
+Try: python medicine_box_monitor.py COM8

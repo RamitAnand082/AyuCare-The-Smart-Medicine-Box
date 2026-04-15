@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}Login | Ayucare{% endblock %}
+{% block body_class %}page-auth{% endblock %}
+
+{% block content %}
+  <section class="auth-shell" aria-labelledby="auth-form-title">
+    <div class="auth-hero">
+      <div class="auth-hero-glow" aria-hidden="true"></div>
+      <div class="auth-hero-inner">
+        <p class="auth-eyebrow">Smart medicine care</p>
+        <h1 class="auth-hero-title">AyuCare</h1>
+        <p class="auth-hero-text">
+          Coordinate patients, medicine times, and your ESP32 box from one calm dashboard.
+        </p>
+        <ul class="auth-hero-list">
+          <li>Live dose status &amp; reminders</li>
+          <li>Hardware-ready schedule API</li>
+          <li>Built for busy clinics</li>
+        </ul>
+      </div>
+    </div>
+    <div class="auth-panel">
+    <div class="auth-card">
+      <h1 id="auth-form-title">Welcome back</h1>
+      <p class="auth-subtitle">Sign in with your License ID to open your workspace.</p>
+
+      <form method="post" class="auth-form" novalidate>
+        <div class="form-group">
+          <label for="license_id">License ID</label>
+          <input
+            type="text"
+            id="license_id"
+            name="license_id"
+            placeholder="Enter your License ID"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <div class="password-wrapper">
+            <input
+              type="password"
+              id="password"
+              name="password"
+              placeholder="Enter your password"
+              required
+              data-password-field
+            />
+            <button
+              type="button"
+              class="password-toggle"
+              data-toggle-password
+              aria-label="Show or hide password"
+            >
+              Show
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" class="btn primary-btn">Login</button>
+      </form>
+
+      <p class="auth-footer">
+        Don't have an account?
+        <a href="{{ url_for('auth.register') }}">Create one</a>
+      </p>
+    </div>
+    </div>
+  </section>
+{% endblock %}
+

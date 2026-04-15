@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}Adherence Score | Ayucare{% endblock %}
+{% block body_class %}page-app{% endblock %}
+
+{% block header_actions %}
+  <div class="header-actions">
+    <span class="welcome-text">Welcome, {{ doctor_name }}</span>
+    <a href="{{ url_for('dashboard.dashboard') }}" class="btn secondary-btn">Dashboard</a>
+    <div class="notification-bell" id="notification-bell">
+      <button type="button" class="bell-button" id="notification-toggle" aria-label="Notifications">
+        🔔
+        <span class="badge-count" id="notification-count" hidden>0</span>
+      </button>
+      <div class="notification-dropdown" id="notification-dropdown" hidden>
+        <div class="notification-header">
+          <span>Notifications</span>
+          <button type="button" class="link-button" id="mark-all-read">Mark all read</button>
+        </div>
+        <div class="notification-list" id="notification-list">
+          <p class="notification-empty">No notifications.</p>
+        </div>
+      </div>
+    </div>
+    <a href="{{ url_for('auth.logout') }}" class="btn secondary-btn">Logout</a>
+  </div>
+{% endblock %}
+
+{% block content %}
+  <script>
+    window.AYUCARE_DOCTOR_ID = {{ doctor_id|default('null') }};
+  </script>
+
+  <section class="page-intro" aria-label="Adherence overview">
+    <div class="page-intro-inner">
+      <p class="card-eyebrow">Insights</p>
+      <h2 class="page-intro-title">Adherence &amp; outcomes</h2>
+      <p class="page-intro-sub">
+        Track taken vs missed doses per patient and spot who needs a follow-up.
+      </p>
+    </div>
+    <div class="page-intro-accent" aria-hidden="true"></div>
+  </section>
+
+  <section class="card full-width adherence-section">
+    <div class="card-header-row">
+      <div>
+        <p class="card-eyebrow">Reports</p>
+        <h2>Patient adherence</h2>
+      </div>
+      <button type="button" class="btn secondary-btn" id="refresh-adherence-btn">
+        Refresh
+      </button>
+    </div>
+    <p class="adherence-subtitle">
+      Adherence is calculated as <strong>(taken doses / (taken + missed)) × 100</strong> using all recorded logs.
+    </p>
+
+    <div id="adherence-cards" class="adherence-cards-grid">
+      <!-- Filled by adherence.js -->
+    </div>
+
+    <div class="adherence-chart-wrapper">
+      <h3 class="adherence-chart-title">Adherence by Patient</h3>
+      <div class="adherence-chart-canvas-wrapper">
+        <canvas id="adherence-chart" aria-label="Adherence bar chart" role="img"></canvas>
+      </div>
+    </div>
+  </section>
+
+  <div id="alert-container" class="alert-container" aria-live="polite"></div>
+{% endblock %}
+
+{% block extra_js %}
+  <!-- Socket.IO client for real-time notifications (no SRI for local dev) -->
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <!-- Chart.js for adherence visualization -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/adherence.js') }}"></script>
+{% endblock %}
+
